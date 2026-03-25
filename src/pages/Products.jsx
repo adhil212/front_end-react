@@ -234,7 +234,7 @@ export const Products = () => {
           {products.map((item) => (
             <div key={item._id || item.id}>
               <Link
-                to={`/products/${item.id}`}
+                to={`/products/${item._id}`}
                 className="bg-slate-900/40 border border-white/5 rounded-2xl lg:rounded-[2rem] p-3 lg:p-6 hover:border-emerald-500/40 transition-all group flex flex-col h-full shadow-xl"
               >
                 <div className="relative aspect-square bg-[#0f172a] rounded-xl lg:rounded-2xl flex items-center justify-center mb-4 overflow-hidden p-4 lg:p-8">
@@ -249,9 +249,9 @@ export const Products = () => {
                       </span>
                     )
                   )}
-
+                    
                   <img
-                    src={`http://localhost:4000/images${item.image}`}
+                    src={item.image}
                     alt={item.name}
                     className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500 drop-shadow-2xl"
                   />

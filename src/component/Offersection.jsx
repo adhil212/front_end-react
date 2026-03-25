@@ -92,7 +92,7 @@ const OfferCarousel = () => {
                   className="md:w-1/2 h-full flex justify-center items-center relative"
                 >
                   <img 
-                    src={`http://localhost:4000/images${product.image}`} 
+                    src={product.image} 
                     alt={product.name} 
                     className="w-full max-w-[300px] md:max-w-[450px] max-h-[70%] drop-shadow-[0_35px_35px_rgba(0,0,0,0.6)] object-contain z-10"
                   />

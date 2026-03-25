@@ -21,50 +21,85 @@ export const AddProduct = () => {
       [name]: type === "file" ? files[0] : value,
     }));
   }
+  async function handlefunction(e) {
+  e.preventDefault();
 
-  function handlefunction(e) {
-    e.preventDefault();
-
-    if (!form.image) {
-      return toast.error("Please select an image first");
-    }
-
-    const toastId = toast.loading("Uploading product to secure database...");
-
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      const product = {
-        name: form.name,
-        description: form.description,
-        price: Number(form.price),
-        stock: Number(form.stock),
-        category: form.category,
-        brand: form.brand,
-        tag: form.tag,
-        image: reader.result,
-      };
-
-      fetch("http://localhost:5000/products", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(product),
-      })
-        .then((res) => {
-          if (!res.ok) throw new Error("Server Error");
-          return res.json();
-        })
-        .then((data) => {
-          toast.success("Product Saved!", { id: toastId });
-        })
-        .catch((err) => {
-          console.error("Error:", err);
-          toast.error("Upload Failed: Check connection", { id: toastId });
-        });
-    };
-
-    reader.readAsDataURL(form.image);
+  if (!form.image) {
+    return toast.error("Please select an image first");
   }
+
+  const toastId = toast.loading("Uploading product to secure database...");
+
+  try {
+    const formData = new FormData();
+
+    formData.append("name", form.name);
+    formData.append("description", form.description);
+    formData.append("price", Number(form.price));
+    formData.append("stock", Number(form.stock));
+    formData.append("category", form.category);
+    formData.append("brand", form.brand);
+    formData.append("tag", form.tag);
+    formData.append("image", form.image); // FILE (important)
+
+    const res = await fetch("http://localhost:4000/products/add", {
+      method: "POST",
+      body: formData, //  no headers
+    });
+
+    if (!res.ok) throw new Error();
+
+    toast.success("Product Saved!", { id: toastId });
+
+  } catch (err) {
+    console.error(err);
+    toast.error("Upload Failed: Check connection", { id: toastId });
+  }
+}
+
+  // function handlefunction(e) {
+  //   e.preventDefault();
+
+  //   if (!form.image) {
+  //     return toast.error("Please select an image first");
+  //   }
+
+  //   const toastId = toast.loading("Uploading product to secure database...");
+
+  //   const reader = new FileReader();
+
+  //   reader.onload = () => {
+  //     const product = {
+  //       name: form.name,
+  //       description: form.description,
+  //       price: Number(form.price),
+  //       stock: Number(form.stock),
+  //       category: form.category,
+  //       brand: form.brand,
+  //       tag: form.tag,
+  //       image: reader.result,
+  //     };
+
+  //     fetch("http://localhost:5000/products", {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify(product),
+  //     })
+  //       .then((res) => {
+  //         if (!res.ok) throw new Error("Server Error");
+  //         return res.json();
+  //       })
+  //       .then((data) => {
+  //         toast.success("Product Saved!", { id: toastId });
+  //       })
+  //       .catch((err) => {
+  //         console.error("Error:", err);
+  //         toast.error("Upload Failed: Check connection", { id: toastId });
+  //       });
+  //   };
+
+  //   reader.readAsDataURL(form.image);
+  // }
 
   
   const inputStyle = "w-full p-3 bg-[#1c1d29] border border-gray-800 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all";

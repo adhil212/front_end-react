@@ -8,7 +8,7 @@ export const AdminUsers = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://localhost:5000/users")
+    fetch("http://localhost:4000/users")
       .then((res) => res.json())
       .then((data) => {
         userdata(data);
@@ -17,7 +17,19 @@ export const AdminUsers = () => {
       .catch((err) => console.error("Error fetching users:", err));
   }, []);
 
-  function changeRole(id) {
+  async function changeRole(id) {
+    try {
+
+
+
+      const res=await fetch(`http://localhost:4000/users/${id}`,{method:"PUT"})
+      if (!res.ok) throw new Error();
+      
+
+
+    } catch (error) {
+      toast.error("somthing wrong")
+    }
     const currentUser = user.find((u) => u.id === id);
     const newRole = currentUser.role === "user" ? "admin" : "user";
 
@@ -34,20 +46,17 @@ export const AdminUsers = () => {
       .catch((err) => console.error(err));
   }
 
-  function deleteUser(id) {
-    if (!window.confirm("Are you sure you want to delete this user?")) return;
 
-    fetch(`http://localhost:5000/users/${id}`, { method: "DELETE" })
-      .then((res) => {
-        if (!res.ok) throw new Error("Delete failed");
-        userdata((prev) => prev.filter((u) => u.id !== id));
-        setusercount((prev) => prev - 1);
-        toast.success("User deleted successfully!");
-      })
-      .catch((err) => {
-        console.error(err);
-        toast.error("Failed to delete user.");
-      });
+  async function deleteuser(id){
+    try {
+      const res=await fetch(`http://localhost:4000/users/${id}`,{method:"DELETE"})
+      if (!res.ok) throw new Error();
+      
+     userdata((pre)=>pre.filter((u)=>u._id !==id))
+      toast.success("User deleted");
+    } catch (error) {
+      toast.error(error)
+    }
   }
 
   return (
@@ -130,7 +139,7 @@ export const AdminUsers = () => {
                 <div className="col-span-3 w-full flex flex-wrap md:flex-nowrap items-center justify-between md:justify-end gap-4 border-t border-gray-800 md:border-t-0 pt-5 md:pt-0">
                   <div className="flex gap-5 items-center">
                     <button
-                      onClick={() => changeRole(v.id)}
+                      onClick={() => changeRole(v._id)}
                       className="text-[11px] font-black text-indigo-400 hover:text-indigo-300 uppercase tracking-widest transition-colors"
                     >
                       {v.role === "user" ? "Promote" : "Demote"}
@@ -138,7 +147,7 @@ export const AdminUsers = () => {
 
                     {v.role !== "admin" && (
                       <button
-                        onClick={() => deleteUser(v.id)}
+                        onClick={() => deleteuser(v._id)}
                         className="text-[11px] font-black text-red-400 hover:text-red-300 uppercase tracking-widest transition-colors"
                       >
                         Delete
@@ -147,7 +156,7 @@ export const AdminUsers = () => {
                   </div>
 
                   <button
-                    onClick={() => navigate(`/admin/users/${v.id}`)}
+                    onClick={() => navigate(`/admin/users/${v._id}`)}
                     className="w-full md:w-auto bg-[#1c1d29] border border-gray-700 text-gray-200 px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-gray-700 hover:text-white transition-all active:scale-95 shadow-lg"
                   >
                     Profile

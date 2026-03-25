@@ -118,7 +118,7 @@ const Cart = () => {
                 className="bg-[#111a2e] p-4 rounded-xl flex items-center gap-4"
               >
                 <img
-                  src={`http://localhost:4000/images${item.image}`}
+                  src={item.image}
                   alt={item.name}
                   className="w-20 h-20 object-contain"
                 />

@@ -99,9 +99,7 @@ export const Productsdetaail = () => {
 
             <img
               src={
-                product.image?.startsWith("data:")
-                  ? product.image
-                  : `http://localhost:4000/images${product.image}`
+                product.image
               }
               alt={product.name}
               className="max-h-full w-auto object-contain z-10 group-hover:scale-110 transition-transform duration-700 drop-shadow-2xl"

@@ -6,9 +6,10 @@ export const UserDetails = () => {
   const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState(null);
   const [loading, setLoading] = useState(true);
+  console.log(userInfo)
 
   useEffect(() => {
-    fetch(`http://localhost:5000/users/${id}`)
+    fetch(`http://localhost:4000/users/${id}`)
       .then((res) => res.json())
       .then((data) => {
         setUserInfo(data);

@@ -68,7 +68,7 @@ const Slidesection = () => {
 
               {/* Image */}
               <motion.img
-                src={`http://localhost:4000/images${product.image}`}
+                src={product.image}
                 alt={product.name}
                 whileHover={{ scale: 1.1, rotate: -5, y: -10 }}
                 className="absolute -right-8 -bottom-4 w-[220px] md:w-[260px] drop-shadow-[0_20px_50px_rgba(0,0,0,0.4)] pointer-events-none transition-all duration-500 group-hover:drop-shadow-[0_30px_60px_rgba(0,0,0,0.5)] object-contain h-full p-4"
@@ -78,6 +78,7 @@ const Slidesection = () => {
         </div>
       </div>
     </section>
+    
   );
 };
 

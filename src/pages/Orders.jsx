@@ -160,7 +160,7 @@ const Orders = () => {
                         >
                           <div className="w-14 h-14 bg-slate-900 rounded-xl flex items-center justify-center p-2 shrink-0 border border-white/5">
                             <img
-                              src={`http://localhost:4000/images/${item.image}`}
+                              src={item.image}
                               alt=""
                               className="max-h-full object-contain"
                             />
