@@ -24,9 +24,13 @@ const Cart = () => {
 
     const fetchCart = async () => {
       try {
-        const res = await fetch(
-          `http://localhost:4000/cart/get/${loggedInUser._id}`,
-        );
+        const token = localStorage.getItem("token");
+
+        const res = await fetch(`http://localhost:4000/cart/get`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
         const data = await res.json();
 
@@ -54,11 +58,15 @@ const Cart = () => {
 
     setCartItems(updated);
 
+    const token = localStorage.getItem("token");
+
     await fetch("http://localhost:4000/cart/update", {
       method: "PUT",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
       body: JSON.stringify({
-        userId: loggedInUser._id,
         productId,
         qty: newQty,
       }),
@@ -66,11 +74,16 @@ const Cart = () => {
   };
   const removeItem = async (productId) => {
     setCartItems(cartItems.filter((item) => item._id !== productId));
+
+    const token = localStorage.getItem("token");
+
     await fetch("http://localhost:4000/cart/remove", {
       method: "DELETE",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
       body: JSON.stringify({
-        userId: loggedInUser._id,
         productId,
       }),
     });

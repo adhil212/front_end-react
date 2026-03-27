@@ -21,7 +21,7 @@ export const EditProduct = () => {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`http://localhost:5000/products/${id}`)
+    fetch(`http://localhost:4000/products/${id}`)
       .then((res) => {
         if (!res.ok) throw new Error("Product not found");
         return res.json();
@@ -36,38 +36,51 @@ export const EditProduct = () => {
       });
   }, [id]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    fetch(`http://localhost:5000/products/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    })
-      .then((res) => {
-        if (res.ok) {
-          toast.success("Product updated successfully!");
-          navigate("/admin/list-products");
-        } else {
-          toast.error("Failed to update product.");
-        }
-      })
-      .catch((err) => console.error("Error updating:", err));
+    try {
+      const form = new FormData();
+
+      form.append("name", formData.name);
+      form.append("description", formData.description);
+      form.append("price", formData.price);
+      form.append("stock", formData.stock);
+      form.append("brand", formData.brand);
+      form.append("tag", formData.tag);
+
+      if (formData.image instanceof File) {
+        form.append("image", formData.image);
+      }
+
+      const token = localStorage.getItem("token");
+
+      const res = await fetch(`http://localhost:4000/updatepro/${id}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`, 
+        },
+        body: form,
+      });
+
+      if (!res.ok) throw new Error();
+
+      toast.success("Product updated successfully!");
+      navigate("/admin/list-products");
+    } catch (err) {
+      toast.error("Update failed");
+    }
   };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData({ ...formData, image: reader.result });
-      };
-      reader.readAsDataURL(file);
+      setFormData({ ...formData, image: file });
     }
   };
 
-
-  const darkInput = "w-full p-3 bg-[#1c1d29] border border-gray-800 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all text-sm font-medium";
+  const darkInput =
+    "w-full p-3 bg-[#1c1d29] border border-gray-800 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition-all text-sm font-medium";
 
   if (loading)
     return (
@@ -85,14 +98,14 @@ export const EditProduct = () => {
   return (
     <div className="p-4 md:p-6 bg-[#0a0b14] min-h-screen w-full flex justify-center font-sans text-white">
       <div className="w-full max-w-6xl bg-[#11121e] rounded-2xl border border-gray-800 overflow-hidden shadow-2xl">
-        
-       
         <div className="p-4 md:p-6 border-b border-gray-800 flex flex-col sm:flex-row justify-between items-start sm:items-center bg-[#11121e] gap-4">
           <div>
             <h2 className="text-lg md:text-xl font-black text-white uppercase tracking-tight">
               Edit Product
             </h2>
-            <p className="text-[10px] md:text-xs text-gray-500 font-mono">Editing ID: {id}</p>
+            <p className="text-[10px] md:text-xs text-gray-500 font-mono">
+              Editing ID: {id}
+            </p>
           </div>
           <button
             onClick={() => navigate(-1)}
@@ -102,11 +115,8 @@ export const EditProduct = () => {
           </button>
         </div>
 
-       
         <form onSubmit={handleSubmit} className="p-4 md:p-8 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-            
-            
             <div className="md:col-span-2">
               <label className="block text-[10px] font-bold text-gray-500 uppercase mb-2 tracking-widest ml-1">
                 Product Name
@@ -115,12 +125,13 @@ export const EditProduct = () => {
                 type="text"
                 className={darkInput}
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
                 required
               />
             </div>
 
-          
             <div>
               <label className="block text-[10px] font-bold text-gray-500 uppercase mb-2 tracking-widest ml-1">
                 Price ($)
@@ -129,12 +140,13 @@ export const EditProduct = () => {
                 type="number"
                 className={darkInput}
                 value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
+                onChange={(e) =>
+                  setFormData({ ...formData, price: Number(e.target.value) })
+                }
                 required
               />
             </div>
 
-            
             <div>
               <label className="block text-[10px] font-bold text-gray-500 uppercase mb-2 tracking-widest ml-1">
                 Stock Level
@@ -143,12 +155,13 @@ export const EditProduct = () => {
                 type="number"
                 className={darkInput}
                 value={formData.stock}
-                onChange={(e) => setFormData({ ...formData, stock: Number(e.target.value) })}
+                onChange={(e) =>
+                  setFormData({ ...formData, stock: Number(e.target.value) })
+                }
                 required
               />
             </div>
 
-            
             <div className="md:col-span-2">
               <label className="block text-[10px] font-bold text-gray-500 uppercase mb-2 tracking-widest ml-1">
                 Status Tag
@@ -156,34 +169,47 @@ export const EditProduct = () => {
               <select
                 className={`${darkInput} appearance-none cursor-pointer`}
                 value={formData.tag || ""}
-                onChange={(e) => setFormData({ ...formData, tag: e.target.value })}
+                onChange={(e) =>
+                  setFormData({ ...formData, tag: e.target.value })
+                }
               >
-                <option value="" className="bg-[#0a0b14]">No Tag</option>
-                <option value="Sale" className="bg-[#0a0b14]">Sale</option>
-                <option value="New" className="bg-[#0a0b14]">New</option>
-                <option value="Bestseller" className="bg-[#0a0b14]">Bestseller</option>
+                <option value="" className="bg-[#0a0b14]">
+                  No Tag
+                </option>
+                <option value="Sale" className="bg-[#0a0b14]">
+                  Sale
+                </option>
+                <option value="New" className="bg-[#0a0b14]">
+                  New
+                </option>
+                <option value="Bestseller" className="bg-[#0a0b14]">
+                  Bestseller
+                </option>
               </select>
             </div>
           </div>
 
-         
           <div className="pt-4">
             <label className="block text-[10px] font-bold text-gray-500 uppercase mb-2 tracking-widest ml-1">
               Product Image (Upload to replace)
             </label>
             <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-center bg-[#1c1d29] p-5 rounded-2xl border border-gray-800">
-              
-             
               <div className="w-24 h-24 md:w-32 md:h-32 rounded-xl bg-[#0a0b14] border border-gray-700 flex-shrink-0 flex items-center justify-center overflow-hidden shadow-inner">
                 <img
-                  src={formData.image?.startsWith("data:") ? formData.image : `http://localhost:5000${formData.image}`}
+                  src={
+                    formData.image instanceof File
+                      ? URL.createObjectURL(formData.image)
+                      : formData.image
+                  }
                   alt="Preview"
                   className="w-full h-full object-contain p-2"
-                  onError={(e) => (e.target.src = "https://via.placeholder.com/150?text=No+Image")}
+                  onError={(e) =>
+                    (e.target.src =
+                      "https://via.placeholder.com/150?text=No+Image")
+                  }
                 />
               </div>
 
-              
               <div className="flex-grow space-y-3">
                 <input
                   type="file"
@@ -198,7 +224,6 @@ export const EditProduct = () => {
             </div>
           </div>
 
-          
           <div className="pt-6 md:pt-8">
             <button
               type="submit"

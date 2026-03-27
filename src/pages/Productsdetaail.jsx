@@ -8,7 +8,7 @@ export const Productsdetaail = () => {
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
  
-  const [quantity, setQuantity] = useState(0);
+  const [quantity, setQuantity] = useState(1);
   const [isProcessing, setIsProcessing] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -25,42 +25,44 @@ export const Productsdetaail = () => {
       .catch(() => setLoading(false));
   }, [id]);
 
-  const handleAddToCart = async () => {
-    const loggedInUser = JSON.parse(localStorage.getItem("user"));
+const handleAddToCart = async () => {
+  const loggedInUser = JSON.parse(localStorage.getItem("user"));
+  const token = localStorage.getItem("token");
 
-    if (!loggedInUser) {
-      navigate("/login");
-      return;
+  if (!loggedInUser || !token) {
+    navigate("/login");
+    return;
+  }
+
+  setIsProcessing(true);
+
+  try {
+    const res = await fetch("http://localhost:4000/cart/add", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`, 
+      },
+      body: JSON.stringify({
+        productId: product._id,
+        qty: quantity,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.message);
     }
 
-    setIsProcessing(true);
+    toast.success("Added to cart!");
 
-    try {
-      const res = await fetch("http://localhost:4000/cart/add", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId: loggedInUser._id,
-          productId: product._id,
-          qty: quantity,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message);
-      }
-
-      toast.success("Added to cart!");
-    } catch (error) {
-      toast.error(error.message || "Error adding to cart");
-    } finally {
-      setIsProcessing(false);
-    }
-  };
+  } catch (error) {
+    toast.error(error.message || "Error adding to cart");
+  } finally {
+    setIsProcessing(false);
+  }
+};
 
   if (loading)
     return (

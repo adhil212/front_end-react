@@ -23,9 +23,15 @@ export const Dashboard = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const token = localStorage.getItem("token");
+
         const [userRes, productRes] = await Promise.all([
-          fetch("http://localhost:5000/users"),
-          fetch("http://localhost:5000/products"),
+          fetch("http://localhost:4000/users", {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }),
+          fetch("http://localhost:4000/products"), 
         ]);
 
         const users = await userRes.json();
@@ -47,8 +53,12 @@ export const Dashboard = () => {
                 completed++;
 
                 const dateKey = order.date;
-                dailyRevenueMap[dateKey] = (dailyRevenueMap[dateKey] || 0) + order.totalAmount;
-              } else if (order.status === "Processing" || order.status === "Shipped") {
+                dailyRevenueMap[dateKey] =
+                  (dailyRevenueMap[dateKey] || 0) + order.totalAmount;
+              } else if (
+                order.status === "Processing" ||
+                order.status === "Shipped"
+              ) {
                 pending++;
               } else if (order.status === "Cancelled") {
                 cancelled++;
@@ -68,13 +78,19 @@ export const Dashboard = () => {
         setData({
           totalRevenue: revenue,
           pendingOrders: pending,
-          totalProducts: products.length,
+          totalProducts: products.data.length,
           totalOrders: orderCount,
           chartData: formattedChartData,
           statusStats: {
-            completed: orderCount ? Math.round((completed / orderCount) * 100) : 0,
-            processing: orderCount ? Math.round((pending / orderCount) * 100) : 0,
-            cancelled: orderCount ? Math.round((cancelled / orderCount) * 100) : 0,
+            completed: orderCount
+              ? Math.round((completed / orderCount) * 100)
+              : 0,
+            processing: orderCount
+              ? Math.round((pending / orderCount) * 100)
+              : 0,
+            cancelled: orderCount
+              ? Math.round((cancelled / orderCount) * 100)
+              : 0,
           },
         });
         setLoading(false);
@@ -87,72 +103,143 @@ export const Dashboard = () => {
     fetchData();
   }, []);
 
-  if (loading) return <div className="p-10 text-white bg-[#0a0b14] min-h-screen font-sans">Loading Analytics...</div>;
+  if (loading)
+    return (
+      <div className="p-10 text-white bg-[#0a0b14] min-h-screen font-sans">
+        Loading Analytics...
+      </div>
+    );
 
   // SVG Ring Calculations
   const radius = 70;
   const circumference = 2 * Math.PI * radius;
-  
+
   // Calculate offsets for stacking
-  const completedOffset = circumference - (data.statusStats.completed / 100) * circumference;
-  const processingOffset = circumference - ((data.statusStats.completed + data.statusStats.processing) / 100) * circumference;
-  const cancelledOffset = circumference - ((data.statusStats.completed + data.statusStats.processing + data.statusStats.cancelled) / 100) * circumference;
+  const completedOffset =
+    circumference - (data.statusStats.completed / 100) * circumference;
+  const processingOffset =
+    circumference -
+    ((data.statusStats.completed + data.statusStats.processing) / 100) *
+      circumference;
+  const cancelledOffset =
+    circumference -
+    ((data.statusStats.completed +
+      data.statusStats.processing +
+      data.statusStats.cancelled) /
+      100) *
+      circumference;
 
   return (
     <div className="bg-[#0a0b14] min-h-screen text-white p-4 md:p-8 font-sans w-full max-w-full overflow-x-hidden">
       <header className="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold">Dashboard</h1>
-          <p className="text-gray-400 text-sm mt-1">Welcome back, here's what's happening with your store today.</p>
+          <p className="text-gray-400 text-sm mt-1">
+            Welcome back, here's what's happening with your store today.
+          </p>
         </div>
       </header>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
-        <StatCard title="TOTAL REVENUE" value={`$${data.totalRevenue.toLocaleString()}`} icon="💰" />
-        <StatCard title="PENDING ORDERS" value={data.pendingOrders} icon="📋" subtext="Needs attention" />
+        <StatCard
+          title="TOTAL REVENUE"
+          value={`$${data.totalRevenue.toLocaleString()}`}
+          icon="💰"
+        />
+        <StatCard
+          title="PENDING ORDERS"
+          value={data.pendingOrders}
+          icon="📋"
+          subtext="Needs attention"
+        />
         <StatCard title="TOTAL PRODUCTS" value={data.totalProducts} icon="📦" />
         <StatCard title="TOTAL ORDERS" value={data.totalOrders} icon="🛍️" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
         <div className="bg-[#11121e] p-6 rounded-2xl border border-gray-800">
           <h3 className="font-bold mb-6 text-lg">Order Status</h3>
           <div className="relative flex justify-center items-center h-48 mb-6">
             <svg className="w-40 h-40 transform -rotate-90">
-             
-              <circle cx="80" cy="80" r={radius} stroke="#1f2937" strokeWidth="12" fill="transparent" />
-              
-              
               <circle
-                cx="80" cy="80" r={radius} stroke="#6b7280" strokeWidth="12" fill="transparent"
-                strokeDasharray={circumference}
-                style={{ strokeDashoffset: cancelledOffset, transition: 'stroke-dashoffset 1s ease', strokeLinecap: 'round' }}
+                cx="80"
+                cy="80"
+                r={radius}
+                stroke="#1f2937"
+                strokeWidth="12"
+                fill="transparent"
               />
 
-             
               <circle
-                cx="80" cy="80" r={radius} stroke="#eab308" strokeWidth="12" fill="transparent"
+                cx="80"
+                cy="80"
+                r={radius}
+                stroke="#6b7280"
+                strokeWidth="12"
+                fill="transparent"
                 strokeDasharray={circumference}
-                style={{ strokeDashoffset: processingOffset, transition: 'stroke-dashoffset 1s ease', strokeLinecap: 'round' }}
+                style={{
+                  strokeDashoffset: cancelledOffset,
+                  transition: "stroke-dashoffset 1s ease",
+                  strokeLinecap: "round",
+                }}
               />
 
-              
               <circle
-                cx="80" cy="80" r={radius} stroke="#6366f1" strokeWidth="12" fill="transparent"
+                cx="80"
+                cy="80"
+                r={radius}
+                stroke="#eab308"
+                strokeWidth="12"
+                fill="transparent"
                 strokeDasharray={circumference}
-                style={{ strokeDashoffset: completedOffset, transition: 'stroke-dashoffset 1s ease', strokeLinecap: 'round' }}
+                style={{
+                  strokeDashoffset: processingOffset,
+                  transition: "stroke-dashoffset 1s ease",
+                  strokeLinecap: "round",
+                }}
+              />
+
+              <circle
+                cx="80"
+                cy="80"
+                r={radius}
+                stroke="#6366f1"
+                strokeWidth="12"
+                fill="transparent"
+                strokeDasharray={circumference}
+                style={{
+                  strokeDashoffset: completedOffset,
+                  transition: "stroke-dashoffset 1s ease",
+                  strokeLinecap: "round",
+                }}
               />
             </svg>
             <div className="absolute text-center">
-              <span className="text-xs text-gray-400 block uppercase">Delivered</span>
-              <span className="text-xl font-bold">{data.statusStats.completed}%</span>
+              <span className="text-xs text-gray-400 block uppercase">
+                Delivered
+              </span>
+              <span className="text-xl font-bold">
+                {data.statusStats.completed}%
+              </span>
             </div>
           </div>
           <div className="space-y-4">
-            <StatusRow label="Completed" percent={data.statusStats.completed} color="bg-indigo-500" />
-            <StatusRow label="Processing" percent={data.statusStats.processing} color="bg-yellow-500" />
-            <StatusRow label="Cancelled" percent={data.statusStats.cancelled} color="bg-gray-500" />
+            <StatusRow
+              label="Completed"
+              percent={data.statusStats.completed}
+              color="bg-indigo-500"
+            />
+            <StatusRow
+              label="Processing"
+              percent={data.statusStats.processing}
+              color="bg-yellow-500"
+            />
+            <StatusRow
+              label="Cancelled"
+              percent={data.statusStats.cancelled}
+              color="bg-gray-500"
+            />
           </div>
         </div>
 
@@ -161,18 +248,58 @@ export const Dashboard = () => {
             <h3 className="font-bold text-lg">Daily Revenue Trend</h3>
             <div className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-full bg-[#10b981]"></span>
-              <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Revenue</span>
+              <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">
+                Revenue
+              </span>
             </div>
           </div>
 
           <div className="flex-1 w-full h-72">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={data.chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#1f2937" />
-                <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fill: '#9ca3af', fontSize: 11, fontWeight: 'bold' }} dy={10} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fill: '#9ca3af', fontSize: 11 }} tickFormatter={(val) => val.toLocaleString()} />
-                <Tooltip contentStyle={{ backgroundColor: '#1c1d29', border: '1px solid #374151', borderRadius: '8px' }} itemStyle={{ color: '#10b981' }} />
-                <Line type="monotone" dataKey="amount" stroke="#10b981" strokeWidth={4} dot={{ r: 6, fill: '#10b981', strokeWidth: 2, stroke: '#11121e' }} activeDot={{ r: 8, strokeWidth: 0 }} animationDuration={1500} />
+              <LineChart
+                data={data.chartData}
+                margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
+              >
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  vertical={false}
+                  stroke="#1f2937"
+                />
+                <XAxis
+                  dataKey="date"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: "#9ca3af", fontSize: 11, fontWeight: "bold" }}
+                  dy={10}
+                />
+                <YAxis
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: "#9ca3af", fontSize: 11 }}
+                  tickFormatter={(val) => val.toLocaleString()}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: "#1c1d29",
+                    border: "1px solid #374151",
+                    borderRadius: "8px",
+                  }}
+                  itemStyle={{ color: "#10b981" }}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="amount"
+                  stroke="#10b981"
+                  strokeWidth={4}
+                  dot={{
+                    r: 6,
+                    fill: "#10b981",
+                    strokeWidth: 2,
+                    stroke: "#11121e",
+                  }}
+                  activeDot={{ r: 8, strokeWidth: 0 }}
+                  animationDuration={1500}
+                />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -189,9 +316,13 @@ const StatCard = ({ title, value, icon, subtext }) => (
         <p className="text-gray-500 text-[10px] font-bold uppercase">{title}</p>
         <h2 className="text-xl md:text-2xl font-bold">{value}</h2>
       </div>
-      <div className="bg-[#1c1d29] p-2 rounded-lg border border-gray-700">{icon}</div>
+      <div className="bg-[#1c1d29] p-2 rounded-lg border border-gray-700">
+        {icon}
+      </div>
     </div>
-    {subtext && <p className="text-[10px] text-yellow-500 font-medium">⚠️ {subtext}</p>}
+    {subtext && (
+      <p className="text-[10px] text-yellow-500 font-medium">⚠️ {subtext}</p>
+    )}
   </div>
 );
 

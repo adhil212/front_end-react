@@ -49,28 +49,35 @@ export const ListProducts = () => {
     .then((data) => setData(data.data || []))
     .catch((err) => {
       console.error(err);
-      setData([]); // prevent crash
+      setData([]); 
     });
 }, [serchparams]);
 
-  const deleteProduct = (id) => {
-   fetch(`http://localhost:4000/products/${id}`, { method: "DELETE" })
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to delete");
+const deleteProduct = async (id) => {
+  
+  const token = localStorage.getItem("token");
 
-        setData((prevData) => prevData.filter((item) => item.id !== id));
+  const toastId = toast.loading("Deleting product...");
 
-        toast.success("Product deleted successfully!", {
-          position: "bottom-right",
-          autoClose: 3000,
-        });
-      })
-      .catch((err) => {
-        toast.error("Could not delete product.");
-        console.error(err);
-      });
-  };
+  try {
+    const res = await fetch(`http://localhost:4000/products/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`, 
+      },
+    });
 
+    if (!res.ok) throw new Error();
+
+   
+    setData((prev) => prev.filter((item) => item._id !== id));
+
+    toast.success("Product deleted successfully", { id: toastId });
+
+  } catch (err) {
+    toast.error("Delete failed", { id: toastId });
+  }
+};
   // const filterproduct = useMemo(() => {
   //   const q = search.toLowerCase();
   //   return data.filter((v) => {
@@ -187,7 +194,7 @@ export const ListProducts = () => {
             <tbody className="divide-y divide-gray-800">
               {data.map((val) => (
                 <tr
-                  key={val.id}
+                  key={val._id}
                   className="hover:bg-indigo-500/5 transition-all"
                 >
                   <td className="py-4 px-6">
@@ -210,7 +217,7 @@ export const ListProducts = () => {
                           {val.name}
                         </div>
                         <div className="text-[10px] text-gray-500 font-mono mt-1">
-                          ID: {val.id}
+                          ID: {val._id}
                         </div>
                       </div>
                     </div>
@@ -234,13 +241,13 @@ export const ListProducts = () => {
                   <td className="py-4 px-6">
                     <div className="flex justify-end gap-3">
                       <Link
-                        to={`/admin/list-products/${val.id}`}
+                        to={`/admin/list-products/${val._id}`}
                         className="px-3 py-1.5 bg-indigo-500/10 text-indigo-400 hover:bg-indigo-500 hover:text-white rounded-lg text-[11px] font-bold transition-all"
                       >
                         Edit
                       </Link>
                       <button
-                        onClick={() => deleteProduct(val.id)}
+                        onClick={() => deleteProduct(val._id)}
                         className="px-3 py-1.5 bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white rounded-lg text-[11px] font-bold transition-all"
                       >
                         Delete
@@ -257,13 +264,13 @@ export const ListProducts = () => {
         <div className="md:hidden space-y-4">
           {data.map((val) => (
             <div
-              key={val.id}
+              key={val._id}
               className="bg-[#11121e] p-5 rounded-2xl border border-gray-800"
             >
               <div className="flex gap-4 mb-4">
                 <div className="w-16 h-16 bg-[#1c1d29] rounded-xl p-2 border border-gray-800">
                   <img
-                    src={`http://localhost:4000/images/${val.image}`}
+                    src={val.image}
                     alt=""
                     className="w-full h-full object-contain"
                   />
@@ -280,13 +287,13 @@ export const ListProducts = () => {
               </div>
               <div className="flex gap-3 pt-4 border-t border-gray-800">
                 <Link
-                  to={`/admin/list-products/${val.id}`}
+                  to={`/admin/list-products/${val._id}`}
                   className="flex-1 text-center py-2.5 bg-[#1c1d29] text-white text-xs font-bold rounded-xl border border-gray-700"
                 >
                   Edit
                 </Link>
                 <button
-                  onClick={() => deleteProduct(val.id)}
+                  onClick={() => deleteProduct(val._id)}
                   className="flex-1 text-center py-2.5 bg-red-500/10 text-red-400 text-xs font-bold rounded-xl border border-red-500/20"
                 >
                   Delete

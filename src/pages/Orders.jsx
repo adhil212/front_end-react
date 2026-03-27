@@ -14,13 +14,18 @@ const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const loggedInUser = JSON.parse(localStorage.getItem("user"));
+  console.log(orders);
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const res = await fetch(
-          `http://localhost:4000/orders/${loggedInUser._id}`,
-        );
+        const token = localStorage.getItem("token");
+
+        const res = await fetch(`http://localhost:4000/orders`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const data = await res.json();
 
         setOrders(data || []);
@@ -40,11 +45,15 @@ const Orders = () => {
     try {
       toast.loading("Updating system...");
 
+      const token = localStorage.getItem("token");
+
       const res = await fetch("http://localhost:4000/orders/cancel", {
         method: "DELETE",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, 
+        },
         body: JSON.stringify({
-          userId: loggedInUser._id,
           orderId: orderId,
         }),
       });

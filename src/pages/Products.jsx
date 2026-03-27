@@ -8,8 +8,16 @@ export const Products = () => {
   const [products, setProducts] = useState([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [debouncedSearch, setDebouncedSearch] = useState("");
 
   const { searchTerm } = useContext(SearchContext);
+  useEffect(() => {
+  const timer = setTimeout(() => {
+    setDebouncedSearch(searchTerm);
+  }, 500);
+
+  return () => clearTimeout(timer);
+}, [searchTerm]);
 
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -50,18 +58,17 @@ export const Products = () => {
     setSearchParams(params);
   };
 
-  // Sync search with URL
-  useEffect(() => {
-    const params = new URLSearchParams(searchParams);
+ useEffect(() => {
+  const params = new URLSearchParams(searchParams);
 
-    if (searchTerm) {
-      params.set("search", searchTerm);
-    } else {
-      params.delete("search");
-    }
+  if (debouncedSearch) {
+    params.set("search", debouncedSearch);
+  } else {
+    params.delete("search");
+  }
 
-    setSearchParams(params);
-  }, [searchTerm]);
+  setSearchParams(params);
+}, [debouncedSearch]);
 
   // Fetch products from server
   useEffect(() => {

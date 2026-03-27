@@ -37,9 +37,13 @@ const PaymentPage = () => {
 
     const loadCheckoutData = async () => {
       try {
-        const res = await fetch(
-          `http://localhost:4000/cart/get/${loggedInUser._id}`,
-        );
+        const token = localStorage.getItem("token");
+
+        const res = await fetch(`http://localhost:4000/cart/get`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
         const data = await res.json();
 
@@ -72,52 +76,102 @@ const PaymentPage = () => {
   };
 
   const finalizeOrder = async () => {
-
-  if (cartItems.length === 0) {
-    return toast.error("ACCESS DENIED: No items found in payload.");
-  }
-
-  if (!formData.firstName || !formData.phone) {
-    return toast.error("Incomplete Logistics: Fill in required details");
-  }
-
-  if (paymentMethod === "Online" && !formData.upiId) {
-    return toast.error("Payment Error: UPI ID required");
-  }
-
-  try {
-
-    toast.loading("Authorizing Transaction...");
-
-    const response = await fetch("http://localhost:4000/order/checkout", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        userId: loggedInUser._id,
-        address: formData,
-        paymentMethod,
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error("Server Reject");
+    if (cartItems.length === 0) {
+      return toast.error("ACCESS DENIED: No items found in payload.");
     }
 
-    toast.dismiss();
-    toast.success("Transaction Encrypted & Confirmed!");
+    if (!formData.firstName || !formData.phone) {
+      return toast.error("Incomplete Logistics: Fill in required details");
+    }
 
-    setTimeout(() => navigate("/orders"), 100);
+    try {
+      if (paymentMethod === "COD") {
+        toast.loading("Authorizing Transaction...");
+        console.log("Calling backend...");
 
-  } catch (error) {
+        const token = localStorage.getItem("token");
 
-    toast.dismiss();
-    toast.error("System Override: Transaction Failed");
+        const response = await fetch("http://localhost:4000/order/checkout", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            address: formData,
+            paymentMethod: "COD",
+          }),
+        });
 
-  }
+        if (!response.ok) throw new Error();
 
-};
+        toast.dismiss();
+        toast.success("Transaction Encrypted & Confirmed!");
+
+        navigate("/orders");
+        return;
+      }
+
+      toast.loading("Connecting to Payment Gateway...");
+
+      const res = await fetch("http://localhost:4000/payment/create-order", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ amount: total }),
+      });
+
+      const order = await res.json();
+
+      toast.dismiss();
+
+      const options = {
+        key: "rzp_test_SVsyt6P0MG74K5",
+        amount: order.amount,
+        currency: "INR",
+        name: "EzBuy",
+        description: "Secure Payment",
+        order_id: order.id,
+
+handler: async function (response) {
+
+  const token = localStorage.getItem("token");
+
+  const verifyRes = await fetch("http://localhost:4000/payment/verify", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      razorpay_order_id: response.razorpay_order_id,
+      razorpay_payment_id: response.razorpay_payment_id,
+      razorpay_signature: response.razorpay_signature,
+      address: formData,
+      paymentMethod: "Online",
+    }),
+  });
+
+  if (!verifyRes.ok) throw new Error();
+
+  toast.success("Payment Verified!");
+
+  navigate("/orders");
+},
+
+        theme: {
+          color: "#10b981",
+        },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (error) {
+      toast.dismiss();
+      toast.error("System Override: Transaction Failed");
+    }
+  };
 
   if (isLoading) {
     return (

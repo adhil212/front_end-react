@@ -40,11 +40,11 @@ export const AddProduct = () => {
     formData.append("category", form.category);
     formData.append("brand", form.brand);
     formData.append("tag", form.tag);
-    formData.append("image", form.image); // FILE (important)
+    formData.append("image", form.image); 
 
-    const res = await fetch("http://localhost:4000/products/add", {
+    const res = await fetch("http://localhost:4000/admin/products/add", {
       method: "POST",
-      body: formData, //  no headers
+      body: formData, 
     });
 
     if (!res.ok) throw new Error();
