@@ -5,7 +5,7 @@ import "./App.css";
 import { Route, Routes, Navigate } from "react-router-dom"; 
 import { Home } from "./pages/Home";      
 import { Products } from "./pages/Products"; 
-import Navbar from "./component/nav";  
+import Navbar from "./component/Nav";  
 import AboutUs from "./pages/About"; 
 import { AuthPage } from "./pages/AuthPage";
 import { Productsdetaail } from "./pages/Productsdetaail";
