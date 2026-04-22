@@ -41,7 +41,7 @@ export const ListProducts = () => {
   },[search])
 
   useEffect(() => {
-  fetch(`http://localhost:4000/products?${serchparams.toString()}`)
+  fetch(`https://backend-sk0h.onrender.com/products?${serchparams.toString()}`)
     .then((res) => {
       if (!res.ok) throw new Error("Failed to fetch");
       return res.json();
@@ -60,7 +60,7 @@ const deleteProduct = async (id) => {
   const toastId = toast.loading("Deleting product...");
 
   try {
-    const res = await fetch(`http://localhost:4000/products/${id}`, {
+    const res = await fetch(`https://backend-sk0h.onrender.com/products/${id}`, {
       method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`, 

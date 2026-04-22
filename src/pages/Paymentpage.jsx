@@ -39,7 +39,7 @@ const PaymentPage = () => {
       try {
         const token = localStorage.getItem("token");
 
-        const res = await fetch(`http://localhost:4000/cart/get`, {
+        const res = await fetch(`https://backend-sk0h.onrender.com/cart/get`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -91,7 +91,7 @@ const PaymentPage = () => {
 
         const token = localStorage.getItem("token");
 
-        const response = await fetch("http://localhost:4000/order/checkout", {
+        const response = await fetch("https://backend-sk0h.onrender.com/order/checkout", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -114,7 +114,7 @@ const PaymentPage = () => {
 
       toast.loading("Connecting to Payment Gateway...");
 
-      const res = await fetch("http://localhost:4000/payment/create-order", {
+      const res = await fetch("https://backend-sk0h.onrender.com/payment/create-order", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -138,7 +138,7 @@ handler: async function (response) {
 
   const token = localStorage.getItem("token");
 
-  const verifyRes = await fetch("http://localhost:4000/payment/verify", {
+  const verifyRes = await fetch("https://backend-sk0h.onrender.com/payment/verify", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

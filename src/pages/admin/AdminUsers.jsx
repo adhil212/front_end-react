@@ -10,7 +10,7 @@ export const AdminUsers = () => {
   useEffect(() => {
     const token = localStorage.getItem("token");
 
-    fetch("http://localhost:4000/users", {
+    fetch("https://backend-sk0h.onrender.com/users", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -27,7 +27,7 @@ export const AdminUsers = () => {
     try {
       const token = localStorage.getItem("token");
 
-      const res = await fetch(`http://localhost:4000/users/${id}`, {
+      const res = await fetch(`https://backend-sk0h.onrender.com/users/${id}`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -51,7 +51,7 @@ export const AdminUsers = () => {
     try {
       const token = localStorage.getItem("token");
 
-      const res = await fetch(`http://localhost:4000/users/${id}`, {
+      const res = await fetch(`https://backend-sk0h.onrender.com/users/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,

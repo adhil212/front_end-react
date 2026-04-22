@@ -26,12 +26,12 @@ export const Dashboard = () => {
         const token = localStorage.getItem("token");
 
         const [userRes, productRes] = await Promise.all([
-          fetch("http://localhost:4000/users", {
+          fetch("https://backend-sk0h.onrender.com/users", {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }),
-          fetch("http://localhost:4000/products"), 
+          fetch("https://backend-sk0h.onrender.com/products"), 
         ]);
 
         const users = await userRes.json();

@@ -37,7 +37,7 @@ export const AuthPage = () => {
       if (isLogin) {
         // LOGIN LOGIC
 
-        const response = await fetch("http://localhost:4000/auth/login", {
+        const response = await fetch("https://backend-sk0h.onrender.com/auth/login", {
           method: "POST",
           headers: {
             "content-type": "application/json",
@@ -60,7 +60,7 @@ export const AuthPage = () => {
         }
       } else {
         // REGISTER logic
-        const response = await fetch("http://localhost:4000/auth/register", {
+        const response = await fetch("https://backend-sk0h.onrender.com/auth/register", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

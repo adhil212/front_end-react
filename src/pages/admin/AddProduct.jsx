@@ -42,7 +42,7 @@ export const AddProduct = () => {
     formData.append("tag", form.tag);
     formData.append("image", form.image); 
 
-    const res = await fetch("http://localhost:4000/admin/products/add", {
+    const res = await fetch("https://backend-sk0h.onrender.com/admin/products/add", {
       method: "POST",
       body: formData, 
     });

@@ -17,6 +17,7 @@ export const Products = () => {
   }, 500);
 
   return () => clearTimeout(timer);
+  
 }, [searchTerm]);
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -74,7 +75,7 @@ export const Products = () => {
   useEffect(() => {
     setLoading(true);
 
-    fetch(`http://localhost:4000/products?${searchParams.toString()}`)
+    fetch(`https://backend-sk0h.onrender.com/products?${searchParams.toString()}`)
       .then((res) => res.json())
       .then((data) => {
         const productData = data.data || data;

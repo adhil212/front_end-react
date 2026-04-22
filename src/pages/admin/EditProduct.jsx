@@ -21,7 +21,7 @@ export const EditProduct = () => {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`http://localhost:4000/products/${id}`)
+    fetch(`https://backend-sk0h.onrender.com/products/${id}`)
       .then((res) => {
         if (!res.ok) throw new Error("Product not found");
         return res.json();
@@ -55,7 +55,7 @@ export const EditProduct = () => {
 
       const token = localStorage.getItem("token");
 
-      const res = await fetch(`http://localhost:4000/updatepro/${id}`, {
+      const res = await fetch(`https://backend-sk0h.onrender.com/updatepro/${id}`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`, 

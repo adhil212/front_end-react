@@ -13,7 +13,7 @@ export const Productsdetaail = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`http://localhost:4000/products/${id}`)
+    fetch(`https://backend-sk0h.onrender.com/products/${id}`)
       .then((res) => {
         if (!res.ok) throw new Error("Product not found");
         return res.json();
@@ -37,7 +37,7 @@ const handleAddToCart = async () => {
   setIsProcessing(true);
 
   try {
-    const res = await fetch("http://localhost:4000/cart/add", {
+    const res = await fetch("https://backend-sk0h.onrender.com/cart/add", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

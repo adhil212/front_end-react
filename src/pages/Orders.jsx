@@ -12,6 +12,7 @@ import toast from "react-hot-toast";
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
+  console.log(orders.items);
   const [loading, setLoading] = useState(true);
   const loggedInUser = JSON.parse(localStorage.getItem("user"));
   console.log(orders);
@@ -21,7 +22,7 @@ const Orders = () => {
       try {
         const token = localStorage.getItem("token");
 
-        const res = await fetch(`http://localhost:4000/orders`, {
+        const res = await fetch(`https://backend-sk0h.onrender.com/orders`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -47,16 +48,19 @@ const Orders = () => {
 
       const token = localStorage.getItem("token");
 
-      const res = await fetch("http://localhost:4000/orders/cancel", {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, 
+      const res = await fetch(
+        "https://backend-sk0h.onrender.com/orders/cancel",
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            orderId: orderId,
+          }),
         },
-        body: JSON.stringify({
-          orderId: orderId,
-        }),
-      });
+      );
 
       if (!res.ok) {
         throw new Error();
@@ -169,7 +173,7 @@ const Orders = () => {
                         >
                           <div className="w-14 h-14 bg-slate-900 rounded-xl flex items-center justify-center p-2 shrink-0 border border-white/5">
                             <img
-                              src={item.image}
+                              src={item.productId?.image}
                               alt=""
                               className="max-h-full object-contain"
                             />
@@ -177,11 +181,11 @@ const Orders = () => {
 
                           <div className="min-w-0">
                             <p className="text-xs font-bold truncate text-white">
-                              {item.name}
+                              {item.productId?.name}
                             </p>
 
                             <p className="text-[10px] text-emerald-500 font-black mt-1">
-                              {item.qty} × ${item.price}
+                              {item.qty} × ${item.productId?.price}
                             </p>
                           </div>
                         </div>

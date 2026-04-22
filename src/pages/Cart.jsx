@@ -26,7 +26,7 @@ const Cart = () => {
       try {
         const token = localStorage.getItem("token");
 
-        const res = await fetch(`http://localhost:4000/cart/get`, {
+        const res = await fetch(`https://backend-sk0h.onrender.com/cart/get`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -60,7 +60,7 @@ const Cart = () => {
 
     const token = localStorage.getItem("token");
 
-    await fetch("http://localhost:4000/cart/update", {
+    await fetch("https://backend-sk0h.onrender.com/cart/update", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -77,7 +77,7 @@ const Cart = () => {
 
     const token = localStorage.getItem("token");
 
-    await fetch("http://localhost:4000/cart/remove", {
+    await fetch("https://backend-sk0h.onrender.com/cart/remove", {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",

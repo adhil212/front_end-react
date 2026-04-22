@@ -77,7 +77,7 @@ const Navbar = () => {
                 focus:border-emerald-500
                 ${isSearchActive ? "w-40 lg:w-64" : "w-24 lg:w-40"}
               `}
-            />
+            />       
             <button onClick={handleSearch} className="absolute right-3 text-xl text-gray-500">
               <IoMdSearch />
             </button>

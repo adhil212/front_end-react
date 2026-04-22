@@ -9,7 +9,7 @@ export const UserDetails = () => {
   console.log(userInfo)
 
   useEffect(() => {
-    fetch(`http://localhost:4000/users/${id}`)
+    fetch(`https://backend-sk0h.onrender.com/users/${id}`)
       .then((res) => res.json())
       .then((data) => {
         setUserInfo(data);

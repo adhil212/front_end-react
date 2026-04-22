@@ -8,7 +8,7 @@ const Slidesection = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://localhost:4000/products")
+    fetch("https://backend-sk0h.onrender.com/products")
       .then((res) => res.json())
       .then((data) => {
 

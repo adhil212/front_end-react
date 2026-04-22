@@ -8,7 +8,7 @@ export const AdminOrders = () => {
   const fetchAllUsersAndOrders = () => {
     const token = localStorage.getItem("token");
 
-    fetch("http://localhost:4000/all/userorder", {
+    fetch("https://backend-sk0h.onrender.com/all/userorder", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -48,7 +48,7 @@ export const AdminOrders = () => {
     try {
       const token = localStorage.getItem("token");
 
-      const res = await fetch("http://localhost:4000/all/order-status", {
+      const res = await fetch("https://backend-sk0h.onrender.com/all/order-status", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
