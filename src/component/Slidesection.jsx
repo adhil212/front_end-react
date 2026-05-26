@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 
-const Slidesection = () => {
+const Slidesection = ({ onLoad }) => {
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -27,10 +27,12 @@ const Slidesection = () => {
 
         setFeaturedProducts(selected);
         setLoading(false);
+        onLoad?.();
       })
       .catch((err) => {
         console.error("Error fetching section data:", err);
         setLoading(false);
+        onLoad?.();
       });
   }, []);
 

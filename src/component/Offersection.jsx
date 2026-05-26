@@ -9,7 +9,7 @@ import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 
-const OfferCarousel = () => {
+const OfferCarousel = ({ onLoad }) => {
   const [offers, setOffers] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -28,10 +28,12 @@ const OfferCarousel = () => {
         
         setOffers(data.data.slice(0, 3)); 
         setLoading(false);
+        onLoad?.();
       })
       .catch((err) => {
         console.error("Error fetching carousel data:", err);
         setLoading(false);
+        onLoad?.();
       });
   }, []);
 
